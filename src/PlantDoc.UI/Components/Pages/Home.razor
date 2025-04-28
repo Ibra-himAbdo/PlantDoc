@@ -2,6 +2,7 @@
 @layout PlantLayout
 @inject ISnackbar Snackbar
 @inject IChatService ChatService
+@inject HybridScrollService ScrollService
 @implements IDisposable
 
 <PageTitle>Chat</PageTitle>
@@ -10,7 +11,7 @@
           Justify="Justify.Center"
           AlignItems="AlignItems.Stretch"
           StretchItems="StretchItems.Start">
-    <MudPaper Outlined="true" Class="rounded-0 overflow-y-auto flex-grow-1">
+    <MudPaper id="messages-container" Outlined="true" Class="rounded-0 overflow-y-auto flex-grow-1">
         <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-3">
             <MudStack Spacing="2">
                 @if (ChatService.CurrentChat?.Messages.Count == 0)
@@ -57,6 +58,7 @@
                           OnAdornmentClick="SendMessage"
                           AdornmentAriaLabel="Send"
                           Variant="Variant.Outlined"
+                          Class="mr-3"
                           Disabled="@(_isInputDisabled || ChatService.IsBotTyping)"
                           Immediate="true"/>
         </MudStack>
@@ -77,6 +79,10 @@
             }
             await InvokeAsync(StateHasChanged);
         };
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await ScrollService.ScrollToBottom("messages-container");
     }
 
     private async Task OnKeyDownHandler(KeyboardEventArgs e)
@@ -103,6 +109,7 @@
             await InvokeAsync(StateHasChanged); // Update UI immediately
 
             await ChatService.SendMessageAsync(messageToSend);
+            await ScrollService.ScrollToBottom("messages-container");
         }
         catch (Exception ex)
         {

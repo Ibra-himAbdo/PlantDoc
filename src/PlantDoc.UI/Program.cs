@@ -1,5 +1,6 @@
 using MudBlazor.Services;
 using PlantDoc.UI.Components;
+using PlantDoc.UI.Services;
 using PlantDoc.UI.Services.ChatServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMudServices();
 
 builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<HybridScrollService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
