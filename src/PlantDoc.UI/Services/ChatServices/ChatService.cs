@@ -4,13 +4,12 @@ public class ChatService : IChatService
 {
     private List<Chat> _chats = [];
     private string? _currentChatId;
+    private Chat? _pendingChat; // For tracking unsaved chats
 
     public event Action? OnChange;
     public bool IsBotTyping { get; private set; }
-    public Chat? CurrentChat => _chats.FirstOrDefault(c => c.Id == _currentChatId);
-
-    public List<Chat> ChatHistory => _chats.OrderByDescending(c => c.CreatedAt)
-        .ToList();
+    public Chat? CurrentChat => _chats.FirstOrDefault(c => c.Id == _currentChatId) ?? _pendingChat;
+    public List<Chat> ChatHistory => _chats.OrderByDescending(c => c.CreatedAt).ToList();
 
     // Sample responses for the bot
     private readonly List<string> _botResponses = new()
@@ -35,7 +34,8 @@ public class ChatService : IChatService
 
     public async Task CreateNewChatAsync()
     {
-        var newChat = new Chat
+        // Create a new pending chat (not in history yet)
+        _pendingChat = new Chat
         {
             Messages = new List<ChatMessage>
             {
@@ -48,14 +48,20 @@ public class ChatService : IChatService
             }
         };
 
-        _chats.Add(newChat);
-        _currentChatId = newChat.Id;
+        _currentChatId = _pendingChat.Id;
         await NotifyStateChangedAsync();
     }
 
     public async Task SendMessageAsync(string message)
     {
         if (CurrentChat == null || string.IsNullOrWhiteSpace(message)) return;
+
+        // If this is the first user message in a pending chat, add to history
+        if (_pendingChat != null && CurrentChat.Messages.Count == 1) // Only welcome message exists
+        {
+            _chats.Add(_pendingChat);
+            _pendingChat = null;
+        }
 
         // Add user message
         CurrentChat.Messages.Add(new ChatMessage
@@ -65,8 +71,8 @@ public class ChatService : IChatService
             Timestamp = DateTime.UtcNow
         });
 
-        // Update title if first user message
-        if (CurrentChat.Messages.Count == 2)
+        // Set chat title from first user message
+        if (CurrentChat.Messages.Count == 2) // Welcome + first user message
         {
             CurrentChat.Title = message.Length > 30
                 ? message[..30] + "..."
@@ -75,14 +81,11 @@ public class ChatService : IChatService
 
         await NotifyStateChangedAsync();
 
-        // Simulate bot typing
+        // Simulate bot typing and response
         IsBotTyping = true;
         await NotifyStateChangedAsync();
-
-        // Simulate processing delay
         await Task.Delay(1500);
 
-        // Add bot response
         CurrentChat.Messages.Add(new ChatMessage
         {
             Sender = SenderType.Bot,
@@ -96,6 +99,8 @@ public class ChatService : IChatService
 
     public async Task LoadChatAsync(string chatId)
     {
+        // Clear any pending chat when loading existing one
+        _pendingChat = null;
         _currentChatId = chatId;
         await NotifyStateChangedAsync();
     }
@@ -107,9 +112,9 @@ public class ChatService : IChatService
         {
             await CreateNewChatAsync();
         }
-
         await NotifyStateChangedAsync();
     }
+
 
     private string GetBotResponse()
     {
@@ -161,6 +166,11 @@ public class ChatService : IChatService
 
     public void Dispose()
     {
-        // Clean up any resources if needed
+        // Clean up any pending chat when service disposes
+        if (_pendingChat is { Messages.Count: <= 1 })
+        {
+            // Don't save chats with only the welcome message
+            _pendingChat = null;
+        }
     }
 }

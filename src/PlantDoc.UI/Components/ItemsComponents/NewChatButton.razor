@@ -1,0 +1,24 @@
+@inject NavigationManager Navigation
+@inject IChatService ChatService
+
+<MudButton StartIcon="@Icons.Material.Filled.Add"
+           Variant="Variant.Filled"
+           Style="width: 92%;"
+           Size="Size.Large"
+           Class="rounded"
+           OnClick="CreateNewChat"
+           Color="Color.Primary">
+    New Chat
+</MudButton>
+
+@code {
+    private async Task CreateNewChat()
+    {
+        await ChatService.CreateNewChatAsync();
+        var newChatId = ChatService.CurrentChat?.Id;
+        if (!string.IsNullOrEmpty(newChatId))
+        {
+            Navigation.NavigateTo($"/chat/{newChatId}");
+        }
+    }
+}

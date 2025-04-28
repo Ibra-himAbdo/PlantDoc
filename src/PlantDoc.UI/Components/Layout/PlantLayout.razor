@@ -34,16 +34,9 @@
                   AlignItems="AlignItems.Center"
                   StretchItems="StretchItems.All">
             <MudDivider/>
-            <MudButton StartIcon="@Icons.Material.Filled.Add"
-                       Variant="Variant.Filled"
-                       Style="width: 92%;"
-                       Size="Size.Large"
-                       Class="rounded"
-                       Color="Color.Primary">
-                New Chat
-            </MudButton>
+            <NewChatButton/>
             <MudDivider/>
-            <History/>
+            <ChatHistory/>
         </MudStack>
     </MudDrawer>
     <MudMainContent Class="@($"pt-16 {(_isDarkMode ? "" : "light-bg")}")">

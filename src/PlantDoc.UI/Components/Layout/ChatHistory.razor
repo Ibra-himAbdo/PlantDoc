@@ -1,0 +1,75 @@
+﻿@inject IChatService ChatService
+@inject NavigationManager Navigation
+
+
+    @if (ChatService.ChatHistory.Count == 0)
+    {
+        <MudText Typo="Typo.body1">No chats yet.</MudText>
+    }
+    else
+    {
+        @foreach (var chat in ChatService.ChatHistory)
+        {
+            <MudButton
+                Color="Color.Default"
+                Variant="Variant.Text"
+                FullWidth="true"
+                Size="Size.Large"
+                Style="width: 96%;"
+                OnClick="@(() => NavigateToChat(chat.Id))">
+
+                <MudPaper Elevation="0"
+                          Width="100%"
+                          Class="pa-2"
+                          Style="background-color: transparent;">
+                    <MudStack Justify="Justify.FlexStart" Row="true" StretchItems="StretchItems.Start">
+                        <MudItem>
+                            <MudText Typo="Typo.subtitle1"
+                                     Class="truncate-text text-start"
+                                     Color="Color.Inherit">
+                                <strong>@(chat.Title ?? "New Chat")</strong>
+                            </MudText>
+                            <MudText Typo="Typo.caption"
+                                     Color="Color.Inherit"
+                                     Class="truncate-text text-start">
+                                @chat.CreatedAt.ToLocalTime().ToShortTimeString()
+                            </MudText>
+                        </MudItem>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Size="Size.Medium"
+                                       OnClick="@((e) => DeleteChat(chat.Id))" />
+                    </MudStack>
+                </MudPaper>
+
+            </MudButton>
+        }
+    }
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        ChatService.OnChange += UpdateUI;
+    }
+
+    private void UpdateUI()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void NavigateToChat(string chatId)
+    {
+        Navigation.NavigateTo($"/chat/{chatId}");
+    }
+
+    private async Task DeleteChat(string chatId)
+    {
+        await ChatService.DeleteChatAsync(chatId);
+        // No need for StateHasChanged here because UpdateUI is triggered automatically
+    }
+
+    public void Dispose()
+    {
+        ChatService.OnChange -= UpdateUI;
+    }
+}
