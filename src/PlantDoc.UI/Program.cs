@@ -1,10 +1,13 @@
 using MudBlazor.Services;
 using PlantDoc.UI.Components;
+using PlantDoc.UI.Services.ChatServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+
+builder.Services.AddScoped<IChatService, ChatService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

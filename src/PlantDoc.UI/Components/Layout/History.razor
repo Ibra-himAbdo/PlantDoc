@@ -1,0 +1,27 @@
+﻿ <MudButton
+            Color="Color.Default"
+            Variant="Variant.Text"
+            FullWidth="true"
+            Size="Size.Large"
+            Style="width: 96%;">
+            <MudPaper Elevation="0"
+                      Width="100%"
+                      Class="pa-2"
+                      Style="background-color: transparent;">
+                <MudStack Justify="Justify.FlexStart" Row="true" StretchItems="StretchItems.Start">
+                    <MudItem>
+                        <MudText Typo="Typo.subtitle1"
+                                 Class="truncate-text text-start"
+                                 Color="Color.Inherit">
+                            <strong>Chat name</strong>
+                        </MudText>
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Inherit"
+                                 Class="truncate-text text-start">
+                            @DateTime.UtcNow.ToShortTimeString()
+                        </MudText>
+                    </MudItem>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Medium"/>
+                </MudStack>
+            </MudPaper>
+        </MudButton>

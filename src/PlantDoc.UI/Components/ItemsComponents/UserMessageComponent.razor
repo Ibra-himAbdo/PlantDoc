@@ -1,0 +1,11 @@
+<div class="d-flex justify-end">
+    <MudPaper Class="p-2" Elevation="2" Style="background-color:#4CAF50; color:white; border-radius:12px; max-width:70%; word-break:break-word; position:relative;">
+        <MudText Typo="Typo.body2">
+            @Message
+        </MudText>
+    </MudPaper>
+</div>
+@code
+{
+    [Parameter] public string? Message { get; set; }
+}

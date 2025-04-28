@@ -1,0 +1,15 @@
+.truncate-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 210px; /* or 100%, or adjust as needed */
+}
+
+.text-start {
+    text-align: start !important;
+}
+
+.light-bg {
+    background-color: #F9FAFB !important;
+}

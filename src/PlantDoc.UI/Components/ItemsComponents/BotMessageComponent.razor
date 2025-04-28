@@ -1,0 +1,27 @@
+<div class="d-flex align-start">
+    <MudAvatar Variant="Variant.Outlined" Class="me-2">
+        <MudIcon Icon="fas fa-leaf" Color="Color.Success" Size="Size.Medium"/>
+    </MudAvatar>
+    <MudPaper Class="p-3" Elevation="2" Style="border-radius:12px; flex: 1;">
+        <MudText Typo="Typo.subtitle2" Color="Color.Success">
+            PlantDoc
+        </MudText>
+        @if (IsLoading)
+        {
+            <MudProgressCircular Color="Color.Primary" Size="Size.Medium" Indeterminate="true"/>
+        }
+        else
+        {
+            <MudText Typo="Typo.body2">
+                @Message
+            </MudText>
+        }
+    </MudPaper>
+</div>
+
+@code
+{
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public string? ImageUrl { get; set; }
+    [Parameter] public bool IsLoading { get; set; } = false;
+}
